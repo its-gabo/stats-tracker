@@ -64,12 +64,9 @@ export async function POST(request: Request) {
       },
     });
 
-    return Response.json({ status: 200, body: { message: "Stats updated" } });
+    return Response.json({ message: "Stats updated successfully" });
   } catch (error) {
-    return {
-      status: 500,
-      body: { error: "Failed to fetch stats", errorMessage: error },
-    };
+    return Response.json({ error });
   } finally {
     await prisma.$disconnect();
   }

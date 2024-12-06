@@ -18,10 +18,7 @@ export async function GET() {
 
     return Response.json(statsWithPlayerNickname);
   } catch (error) {
-    return {
-      status: 500,
-      body: { error: "Failed to fetch stats", errorMessage: error },
-    };
+    return Response.json({ error });
   } finally {
     await prisma.$disconnect();
   }
