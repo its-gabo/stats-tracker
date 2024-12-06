@@ -12,3 +12,63 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Player {
+  id String @id @default(uuid())
+
+  nickname String @unique
+
+  stats   Stats  @relation(fields: [statsId], references: [id])
+  statsId String @unique
+
+  statsPerGame StatsPerGame[]
+
+  createdAt DateTime @default(now())
+}
+
+model Stats {
+  id String @id @default(uuid())
+
+  kills   Int @default(0)
+  deaths  Int @default(0)
+  assists Int @default(0)
+
+  wins   Int @default(0)
+  losses Int @default(0)
+
+  kda               Float @default(0)
+  winRate           Float @default(0)
+  killParticipation Float @default(0)
+
+  player Player?
+
+  createdAt DateTime @default(now())
+}
+
+model StatsPerGame {
+  id String @id @default(uuid())
+
+  kills   Int @default(0)
+  deaths  Int @default(0)
+  assists Int @default(0)
+
+  killParticipation Float @default(0)
+
+  isWin Boolean @default(false)
+
+  player   Player? @relation(fields: [playerId], references: [id])
+  playerId String?
+  game     Game?   @relation(fields: [gameId], references: [id])
+  gameId   String?
+
+  createdAt DateTime @default(now())
+}
+
+model Game {
+  id String @id @default(uuid())
+
+  statsPerGame   StatsPerGame[]
+  gameScreenshot String?
+
+  createdAt DateTime @default(now())
+}
