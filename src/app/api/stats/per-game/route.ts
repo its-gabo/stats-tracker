@@ -13,19 +13,12 @@ export async function POST(request: Request) {
       create: {
         nickname,
         stats: {
-          create: {
-            kills,
-            deaths,
-            assists,
-            wins: isWin ? 1 : 0,
-            losses: isWin ? 0 : 1,
-            kda: (kills + assists) / deaths,
-            winRate: isWin ? 100 : 0,
-            killParticipation,
-          },
+          create: {},
         },
       },
     });
+
+    console.log(player);
 
     await prisma.statsPerGame.create({
       data: {
@@ -52,13 +45,22 @@ export async function POST(request: Request) {
             assists: currentStats!.assists + assists,
             wins: currentStats!.wins + (isWin ? 1 : 0),
             losses: currentStats!.losses + (isWin ? 0 : 1),
-            kda: (currentStats!.kda + (kills + assists) / deaths) / 2,
+            kda:
+              currentStats!.kda === 0
+                ? (kills + assists) / deaths
+                : (currentStats!.kills +
+                    currentStats!.assists +
+                    kills +
+                    assists) /
+                  (deaths + currentStats!.deaths),
             winRate:
               ((currentStats!.wins + (isWin ? 1 : 0)) /
                 (currentStats!.wins + currentStats!.losses + 1)) *
               100,
             killParticipation:
-              (currentStats!.killParticipation + killParticipation) / 2,
+              currentStats!.killParticipation === 0
+                ? killParticipation
+                : (currentStats!.killParticipation + killParticipation) / 2,
           },
         },
       },

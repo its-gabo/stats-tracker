@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 
@@ -17,6 +18,8 @@ export default function AdminPage() {
   const [killParticipation, setKillParticipation] = React.useState(0);
 
   const [isWin, setIsWin] = React.useState(false);
+
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
@@ -43,6 +46,8 @@ export default function AdminPage() {
     };
 
     await axios.post("/api/stats/per-game", data);
+
+    queryClient.invalidateQueries({ queryKey: "statsData" });
 
     setKills(0);
     setDeaths(0);
@@ -71,7 +76,7 @@ export default function AdminPage() {
             <p>Nickname</p>
             <Input
               value={nickname}
-              onChange={(e) => setNickname(e.currentTarget.value)}
+              onChange={(e) => setNickname(e.currentTarget.value.trim())}
             />
           </div>
           <div>
