@@ -33,6 +33,14 @@ export async function POST(request: Request) {
       where: { player: { id: player.id } },
     });
 
+    const allStats = await prisma.statsPerGame.findMany({
+      where: { playerId: player.id },
+    });
+
+    const totalKillParticipation = allStats.reduce((acc, curr) => {
+      return acc + curr.killParticipation;
+    }, 0);
+
     await prisma.player.update({
       where: { id: player.id },
       data: {
@@ -55,10 +63,7 @@ export async function POST(request: Request) {
               ((currentStats!.wins + (isWin ? 1 : 0)) /
                 (currentStats!.wins + currentStats!.losses + 1)) *
               100,
-            killParticipation:
-              currentStats!.killParticipation === 0
-                ? killParticipation
-                : (currentStats!.killParticipation + killParticipation) / 2,
+            killParticipation: totalKillParticipation / allStats.length,
           },
         },
       },
