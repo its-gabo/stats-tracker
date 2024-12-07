@@ -18,8 +18,6 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log(player);
-
     await prisma.statsPerGame.create({
       data: {
         kills,
